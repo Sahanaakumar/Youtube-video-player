@@ -1,0 +1,6 @@
+<svg width="160" height="36" viewBox="0 0 160 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="36" height="36" rx="8" fill="#FF0000"/>
+  <path d="M25 18L15 23.9V12.1L25 18Z" fill="white"/>
+  <text x="46" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FF0000">Video</text>
+  <text x="102" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#0F0F0F">Player</text>
+</svg>

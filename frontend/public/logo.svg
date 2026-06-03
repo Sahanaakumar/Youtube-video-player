@@ -1,0 +1,5 @@
+<svg width="180" height="48" viewBox="0 0 180 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="48" height="48" rx="12" fill="#FF0000"/>
+  <path d="M34 24L20 31.8564V16.1436L34 24Z" fill="white"/>
+  <text x="58" y="32" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#000000">Video Player</text>
+</svg>

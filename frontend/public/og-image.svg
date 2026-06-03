@@ -1,0 +1,7 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0F0F0F"/>
+  <circle cx="600" cy="280" r="80" fill="#FF0000"/>
+  <path d="M570 240L650 280L570 320V240Z" fill="white"/>
+  <text x="600" y="410" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="white" text-anchor="middle">YouTube Video Player</text>
+  <text x="600" y="470" font-family="Arial, sans-serif" font-size="28" fill="#AAAAAA" text-anchor="middle">Watch and Analyze Video Analytics</text>
+</svg>
