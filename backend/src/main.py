@@ -23,7 +23,8 @@ if all([HOST, HOST_SCHEME, HOST_PORT]):
 
 origins = [
     host_origin,
-    host_origin_portless
+    host_origin_portless,
+    "http://localhost:3000",
 ]
 
 @asynccontextmanager

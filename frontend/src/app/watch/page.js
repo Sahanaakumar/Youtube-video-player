@@ -1,78 +1,71 @@
 "use client"
 
-import useWatchSession from "@/hooks/useWatchSession"
-import useYouTubePlayer from "@/hooks/useYouTubePlayer"
 import { useSearchParams } from "next/navigation"
-import { useCallback, useEffect } from "react"
+import { Suspense, useEffect, useRef } from "react"
+import useWatchSession from "@/hooks/useWatchSession"
 import MetricsTable from "./metricsTable"
 
-const FASTAPI_ENDPOINT = "http://localhost:8002/api/video-events/"
+const FASTAPI_ENDPOINT = `${process.env.NEXT_PUBLIC_API_URL}/api/video-events/`
 
-export default function WatchPage () {
+function WatchContent() {
     const searchParams = useSearchParams()
-    const {v: video_id, t:startTime } = Object.fromEntries(searchParams)
+    const video_id = searchParams.get('v')
+    const startTime = parseInt(searchParams.get('t')) || 0
     const session_id = useWatchSession(video_id)
-    console.log('sessionId', session_id)
-    const playerElementId = "youtube-player"
-    const playerState = useYouTubePlayer(video_id, playerElementId, startTime, 1500)
-    const url = `https://www.youtube.com/embed/${video_id}`
-    // console.log(playerState)
+    const intervalRef = useRef(null)
+    const iframeRef = useRef(null)
 
-    // useCallback -> fetch -> fastAPI -> timescaledb 
-    // useEffect
+    useEffect(() => {
+        if (!video_id || !session_id) return
 
-    const updateBackend = useCallback(async (currentPlayerState) => {
-        const headers = {'Content-Type': 'application/json', 'X-Session-ID': session_id}
-        // console.log(video_id, currentPlayerState)
-
-        try {
-            const response = await fetch(FASTAPI_ENDPOINT, {
-                method: "POST",
-                headers: headers,
-                body: JSON.stringify({...currentPlayerState, video_id: video_id})
-            })
-            if (!response.ok) {
-                console.log(await response.text())
-                console.log("error adding data to the backend")
-            } else {
-                const responseData = await response.json()
-                console.log("db data is", responseData)
+        // send a basic event every 5 seconds while on the page
+        intervalRef.current = setInterval(async () => {
+            try {
+                await fetch(FASTAPI_ENDPOINT, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Session-ID': session_id
+                    },
+                    body: JSON.stringify({
+                        is_ready: true,
+                        video_id: video_id,
+                        video_title: "",
+                        current_time: 0,
+                        video_state_label: "PLAYING",
+                        video_state_value: 1
+                    })
+                })
+            } catch (e) {
+                console.log(e)
             }
-        } catch (error) {
-            console.log(error)
-        }
+        }, 5000)
 
-        
+        return () => clearInterval(intervalRef.current)
     }, [video_id, session_id])
-    
 
-    useEffect(()=>{
-        if (!playerState.isReady) return;
-        if (playerState.videoStateLabel === "CUED") return;
-        updateBackend(playerState)
+    if (!video_id) return <div>No video ID provided</div>
 
-    }, [playerState])
-
-    return <>
-
-   
-    
-    <div className="w-[50vw] mx-auto h-full px-5">
-            <div id="video-container" className="relative w-full">
-                <div className="relative w-full pt-[56.25%] bg-black">
-                    <div id={playerElementId} className="absolute top-0 left-0 w-full h-full" />
-                </div>
+    return (
+        <div className="w-[50vw] mx-auto h-full px-5 py-4">
+            <div className="relative w-full pt-[56.25%] bg-black">
+                <iframe
+                    ref={iframeRef}
+                    className="absolute top-0 left-0 w-full h-full"
+                    src={`https://www.youtube.com/embed/${video_id}?start=${startTime}&autoplay=1`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                />
             </div>
-        
+            <MetricsTable videoId={video_id} />
+        </div>
+    )
+}
 
-
-    <h1 className='text-xl'>{playerState.video_title}</h1>
-   
-
-    <MetricsTable videoId={video_id} />
-    </div>
-    
-
-  
-    </>
+export default function WatchPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <WatchContent />
+        </Suspense>
+    )
 }

@@ -4,17 +4,15 @@ import useWatchSession from '@/hooks/useWatchSession'
 import { useState } from 'react'
 import useSWR from 'swr'
 
-const FASTAPI_ENDPOINT = "http://localhost:8002/api/video-events/"
+const FASTAPI_ENDPOINT = `${process.env.NEXT_PUBLIC_API_URL}/api/video-events/`
 
 export default function MetricsTable ({videoId}) {
-    if (!videoId) {
-        return 
-    }
     const [bucket, setBucket ]= useState(1)
     const [bucketUnit, setBucketUnit] = useState("weeks")
     const timeBucket = `${bucket} ${bucketUnit}`
     const url = `${FASTAPI_ENDPOINT}${videoId}?bucket=${timeBucket}`
     const session_id = useWatchSession(videoId)
+    if (!videoId) return null
     const headers = {'Content-Type': 'application/json', 'X-Session-ID': session_id}
 
     const fetcher = (url) => fetch(url, {headers:headers}).then(res => res.json())

@@ -1,4 +1,4 @@
-import YouTubeUrlForm from "@/components/YouTubeUrlForm";
+import YouTubeUrlForm from "@/components/YoutubeUrlForm";
 
 
 export default function Home() {

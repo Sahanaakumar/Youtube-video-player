@@ -6,9 +6,12 @@ from sqlmodel import SQLModel, Session
 
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL == "":
+if not DATABASE_URL:
     raise NotImplementedError("DATABASE_URL needs to be set")
 
+# Render gives postgres:// but psycopg needs postgresql+psycopg://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
 
 engine = create_engine(DATABASE_URL, timezone="UTC")
 
